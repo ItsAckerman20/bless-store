@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bless | Grow With Style</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS (for layout utilities) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bless: {
+                            DEFAULT: '#CC00CC',
+                            light: '#FF66FF',
+                            dark: '#990099',
+                            soft: '#FFF0FF',
+                            lavender: '#F3E8FF'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- CUSTOM CSS & VARIABLES --- */
+        :root {
+            --primary: #CC00CC;
+            --primary-light: #FF66FF;
+            --bg-color: #FAFAFB;
+            --text-dark: #2D3748;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Typography */
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), #FF33FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(204, 0, 204, 0.05);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(204, 0, 204, 0.1);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #a800a8);
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #FF33FF, var(--primary));
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+        .btn-primary:hover::before { opacity: 1; }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(204, 0, 204, 0.25);
+        }
+
+        /* Scroll Progress */
+        #scroll-progress {
+            position: fixed;
+            top: 0; left: 0; width: 0%; height: 4px;
+            background: linear-gradient(to right, var(--primary-light), var(--primary));
+            z-index: 9999;
+            transition: width 0.1s ease;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        .animate-float-delayed { animation: float 5s ease-in-out infinite 1s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(204, 0, 204, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(204, 0, 204, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(204, 0, 204, 0); }
+        }
+
+        /* Scroll Reveal Utility */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #E666E6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Loader */
+        #loader {
+            position: fixed; inset: 0;
+            background: #fff; z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 3px solid var(--primary-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Background Effects */
+        .bg-gradient-radial {
+            background: radial-gradient(circle at center, var(--bless-soft) 0%, transparent 70%);
+        }
+        
+        /* Product Card Hover */
+        .product-card .img-container img {
+            transition: transform 0.7s ease;
+        }
+        .product-card:hover .img-container img {
+            transform: scale(1.08);
+        }
+        .product-card .cart-btn-overlay {
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover .cart-btn-overlay {
+            transform: translateY(0);
+        }
+
+        /* Hide horizontal scrollbar for carousel */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Toast Notification */
+        #toast-container {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            background: white; border-left: 4px solid var(--primary);
+            padding: 15px 20px; border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .toast.show { transform: translateX(0); }
+
+    </style>
+</head>
+<body class="antialiased relative font-sans">
+
+    <!-- Loader -->
+    <div id="loader">
+        <div class="flex flex-col items-center gap-4">
+            <div class="spinner"></div>
+            <h2 class="font-playfair text-2xl text-gradient font-bold tracking-widest">Bless</h2>
+        </div>
+    </div>
+
+    <!-- Scroll Progress -->
+    <div id="scroll-progress"></div>
+
+    <!-- Sticky Navbar -->
+    <header id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 py-4">
+        <div class="container mx-auto px-6 lg:px-12">
+            <nav class="glass rounded-full px-6 py-3 flex justify-between items-center">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2">
+                    <img src="bless logo.jpeg" alt="Bless Logo" class="h-10 w-auto object-contain" onerror="this.outerHTML='<span class=\'font-playfair text-2xl font-bold text-bless\'>Bless</span>'">
+                </a>
+
+                <!-- Desktop Links -->
+                <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
+                    <a href="#home" class="hover:text-bless transition-colors">Home</a>
+                    <a href="#collection" class="hover:text-bless transition-colors">Shop</a>
+                    <a href="#about" class="hover:text-bless transition-colors">About</a>
+                    <a href="#testimonials" class="hover:text-bless transition-colors">Reviews</a>
+
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-600 hover:text-bless transition-colors hidden sm:block">
+                        <i class="fa-regular fa-heart text-xl"></i>
+                    </button>
+                    <button id="cart-icon" class="text-gray-600 hover:text-bless transition-colors relative">
+                        <i class="fa-solid fa-shopping-bag text-xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-bless text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-md">0</span>
+                    </button>
+                    <button id="mobile-menu-btn" class="md:hidden text-gray-600 text-xl focus:outline-none">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white z-[60] transform translate-x-full transition-transform duration-300 flex flex-col justify-center items-center">
+        <button id="close-mobile-menu" class="absolute top-8 right-8 text-3xl text-gray-400 hover:text-bless">
+            <i class="fa-solid fa-times"></i>
+        </button>
+        <div class="flex flex-col space-y-8 text-center font-playfair text-3xl">
+            <a href="#home" class="mobile-link text-gray-800 hover:text-bless transition-colors">Home</a>
+            <a href="#collection" class="mobile-link text-gray-800 hover:text-bless transition-colors">Shop Collection</a>
+            <a href="#about" class="mobile-link text-gray-800 hover:text-bless transition-colors">Our Story</a>
+            <a href="#contact" class="mobile-link text-gray-800 hover:text-bless transition-colors">Contact</a>
+        </div>
+        <img src="bless logo.jpeg" alt="Bless" class="h-16 mt-12 opacity-50" onerror="this.style.display='none'">
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white z-[60] shadow-2xl transform translate-x-full transition-transform duration-400 ease-in-out flex flex-col">
+        <div class="p-6 border-b flex justify-between items-center bg-bless-soft/30">
+            <h2 class="font-playfair text-2xl font-bold text-gray-800">Your Cart</h2>
+            <button id="close-cart" class="text-gray-500 hover:text-bless text-xl">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+            <!-- Cart items will be injected here via JS -->
+            <div class="text-center text-gray-400 mt-10 empty-cart-msg">
+                <i class="fa-solid fa-basket-shopping text-5xl mb-4 opacity-50"></i>
+                <p>Your cart is beautifully empty.</p>
+                <button id="shop-now-empty" class="mt-4 text-bless font-medium hover:underline">Start Shopping</button>
+            </div>
+        </div>
+
+        <div class="p-6 border-t bg-gray-50">
+            <div class="flex justify-between items-center mb-4 text-lg font-medium">
+                <span class="text-gray-600">Subtotal</span>
+                <span id="cart-total" class="font-playfair text-xl text-bless">Rp 0</span>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">Shipping & taxes calculated at checkout.</p>
+            <button id="btn-checkout" class="w-full btn-primary py-4 rounded-xl font-medium text-lg uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+    <!-- Cart Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/40 z-[55] hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#FFFDFE]">
+            <!-- Decorative Backgrounds -->
+            <div class="absolute top-0 right-0 w-[50vw] h-[50vw] bg-bless-soft rounded-full filter blur-[100px] opacity-60 -translate-y-1/2 translate-x-1/4"></div>
+            <div class="absolute bottom-0 left-0 w-[40vw] h-[40vw] bg-bless-lavender rounded-full filter blur-[100px] opacity-60 translate-y-1/3 -translate-x-1/4"></div>
+
+            <div class="container mx-auto px-6 lg:px-12 relative z-10">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    
+                    <!-- Text Content -->
+                    <div class="order-2 lg:order-1 text-center lg:text-left reveal">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-bless-soft text-bless text-sm font-medium mb-6">
+                            <i class="fa-solid fa-star text-xs"></i> Premium Kids Fashion
+                        </div>
+                        <h1 class="font-playfair text-5xl md:text-7xl font-bold leading-tight text-gray-900 mb-6">
+                            Bless <br>
+                            <span class="text-gradient">Grow With Style</span>
+                        </h1>
+                        <p class="text-gray-600 text-lg mb-8 max-w-md mx-auto lg:mx-0">
+                            Dunia Kecil Penuh Dress Cantik Untuk Princess Kamu.
+                        </p>
+                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                            <a href="#collection" class="btn-primary px-8 py-4 rounded-full font-medium w-full sm:w-auto shadow-lg shadow-bless/30">
+                                Shop Collection <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </a>
+                            <a href="#about" class="px-8 py-4 rounded-full font-medium text-gray-700 bg-white border border-gray-200 hover:border-bless hover:text-bless transition-colors w-full sm:w-auto">
+                                Our Story
+                            </a>
+                        </div>
+                        
+                        <!-- Mini Stats -->
+                        <div class="mt-12 flex justify-center lg:justify-start gap-8 border-t border-gray-100 pt-8">
+                            <div>
+                                <h4 class="font-playfair text-2xl font-bold text-gray-800">50k+</h4>
+                                <p class="text-xs text-gray-500 uppercase tracking-wider">Happy Parents</p>
+                            </div>
+                            <div class="w-px bg-gray-200"></div>
+                            <div>
+                                <h4 class="font-playfair text-2xl font-bold text-gray-800">100%</h4>
+                                <p class="text-xs text-gray-500 uppercase tracking-wider">Premium Cotton</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image / Visual -->
+                    <div class="order-1 lg:order-2 relative reveal">
+                        <!-- Main Image Container -->
+                        <div class="relative rounded-t-full rounded-b-[40px] overflow-hidden shadow-2xl p-2 bg-white border border-gray-100 mx-auto max-w-md">
+                            <div class="rounded-t-full rounded-b-[32px] overflow-hidden h-[500px] md:h-[600px] w-full relative">
+                                <img src="bless logo.jpeg" alt="Elegant Girl Fashion" class="w-full h-full object-cover">
+                                <!-- Soft gradient overlay -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Badges -->
+                        <div class="absolute top-20 -left-6 lg:-left-12 glass px-4 py-3 rounded-2xl flex items-center gap-3 animate-float shadow-xl">
+                            <div class="bg-white p-2 rounded-full text-bless shadow-sm">
+                                <i class="fa-solid fa-medal"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium">Kualitas</p>
+                                <p class="text-sm font-bold text-gray-800">Premium</p>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-20 -right-6 lg:-right-10 glass px-4 py-3 rounded-2xl flex items-center gap-3 animate-float-delayed shadow-xl">
+                            <div class="flex -space-x-2">
+                                <img src="https://i.pravatar.cc/100?img=1" class="w-8 h-8 rounded-full border-2 border-white">
+                                <img src="https://i.pravatar.cc/100?img=5" class="w-8 h-8 rounded-full border-2 border-white">
+                                <div class="w-8 h-8 rounded-full border-2 border-white bg-bless-soft flex items-center justify-center text-[10px] text-bless font-bold">+2k</div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-gray-800">Loved by Moms</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Brands / Featured In (Social Proof) -->
+        <section class="py-10 border-y border-gray-100 bg-white">
+            <div class="container mx-auto px-6 overflow-hidden">
+                <p class="text-center text-sm text-gray-400 uppercase tracking-widest mb-6">Meet The Team</p>
+                <div class="flex justify-center items-center flex-wrap gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                    <h3 class="font-playfair text-xl font-bold">Debora Bless A. Hulu</h3>
+                     <h3 class="font-playfair text-xl font-bold">Salsabilla Ramadhani</h3>
+                     <h3 class="font-playfair text-xl font-bold">Raytama Haqqal</h3>
+                     <h3 class="font-playfair text-xl font-bold">Randika Adiwidya Pratama </h3>
+                     <h3 class="font-playfair text-xl font-bold">Madnor Rizqie</h3>
+                     <h3 class="font-playfair text-xl font-bold">M. Wildan Aidil Adha</h3>
+                   
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Collection -->
+        <section id="collection" class="py-24 bg-[#FAFAFB]">
+            <div class="container mx-auto px-6 lg:px-12">
+                <div class="text-center mb-16 reveal">
+                    <span class="text-bless font-medium tracking-wider uppercase text-sm mb-2 block">Produk Terlaris</span>
+                    <h2 class="font-playfair text-4xl md:text-5xl font-bold text-gray-900 mb-4">Best Seller</h2>
+                    <p class="text-gray-500 max-w-2xl mx-auto"></p>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="product-grid">
+                
+                </div>
+                
+                <div class="text-center mt-12 reveal">
+                    <button class="px-8 py-3 rounded-full border-2 border-gray-200 text-gray-600 font-medium hover:border-bless hover:text-bless transition-all">
+                        View All Pieces
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Split About Section -->
+        <section id="about" class="py-24 relative overflow-hidden bg-white">
+            <div class="container mx-auto px-6 lg:px-12">
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div class="relative reveal">
+                        <div class="absolute inset-0 bg-bless-soft rounded-[40px] transform rotate-3 scale-105 -z-10"></div>
+                        <img src="bless logo.jpeg" alt="Mother and Daughter" class="rounded-[40px] shadow-xl w-full h-[500px] object-cover">
+                        
+                        <!-- Floating Element -->
+                        <div class="absolute -bottom-6 -right-6 glass-card p-6 rounded-2xl max-w-xs shadow-2xl">
+                            <i class="fa-solid fa-quote-left text-bless-light text-2xl mb-2"></i>
+                            <p class="text-sm font-medium text-gray-700 italic">"Kenyamanan si kecil adalah prioritas kami. Produk BLESS benar-benar dirancang seistimewa itu untuk buah hati Anda"</p>
+                            <p class="text-xs text-gray-500 mt-2 mt-2 font-bold">- Founder BLESS</p>
+                        </div>
+                    </div>
+
+                    <div class="reveal">
+                        <span class="text-bless font-medium tracking-wider uppercase text-sm mb-2 block">Our Story</span>
+                        <h2 class="font-playfair text-4xl font-bold text-gray-900 mb-6">Filosofi Logo <br></h2>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            Logo BLESS menggambarkan sosok anak perempuan dengan siluet sederhana dan lembut sebagai simbol feminin, kepolosan, dan keindahan masa kecil. Bentuk visual yang minimalis memberikan kesan hangat, ramah, dan mudah dikenali, sehingga mencerminkan karakter brand yang dekat dengan dunia anak-anak.
+                            Siluet yang digunakan dirancang dengan garis-garis yang halus dan sederhana untuk menciptakan kesan lembut serta nyaman dipandang. Pendekatan visual ini sejalan dengan nilai BLESS yang mengutamakan kelembutan, perhatian, dan kasih sayang dalam setiap produknya.
+                            
+                        </p>
+                        <p class="text-gray-600 mb-8 leading-relaxed">
+                            Bentuk rambut yang diikat menjadi elemen khas yang memperkuat identitas logo. Detail tersebut memberikan karakter yang unik sekaligus menambah daya ingat visual terhadap brand. Secara keseluruhan, logo BLESS merepresentasikan kehangatan, kenyamanan, dan makna keberkahan yang menjadi dasar dari identitas merek.</em>.
+                        </p>
+                        
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <div class="w-8 h-8 rounded-full bg-bless-soft flex items-center justify-center text-bless">
+                                    <i class="fa-solid fa-leaf text-sm"></i>
+                                </div>
+                                Sustainable & Soft Fabrics
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <div class="w-8 h-8 rounded-full bg-bless-soft flex items-center justify-center text-bless">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+                                </div>
+                                Exclusive Elegant Designs
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700 font-medium">
+                                <div class="w-8 h-8 rounded-full bg-bless-soft flex items-center justify-center text-bless">
+                                    <i class="fa-solid fa-box-open text-sm"></i>
+                                </div>
+                                Luxury Packaging
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Best Sellers Carousel -->
+        <section class="py-24 bg-bless-soft/30 overflow-hidden">
+            <div class="container mx-auto px-6 lg:px-12 mb-10 reveal flex justify-between items-end">
+                <div>
+                    <h2 class="font-playfair text-4xl font-bold text-gray-900 mb-2">Katalog Produk</h2>
+                    <p class="text-gray-500"></p>
+                </div>
+                <div class="hidden sm:flex gap-2">
+                    <button id="scroll-left" class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-white hover:text-bless hover:border-bless transition-colors">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button id="scroll-right" class="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:bg-bless hover:text-white transition-colors shadow-sm">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Horizontal Scroll Container -->
+            <div id="bestseller-carousel" class="flex overflow-x-auto hide-scroll snap-x snap-mandatory px-6 lg:px-12 pb-10 gap-6 cursor-grab active:cursor-grabbing">
+                <!-- Items populated via JS -->
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section id="testimonials" class="py-24 relative bg-[#FFFDFE]">
+            <!-- Decorative circle -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] border-[1px] border-bless-light/20 rounded-full pointer-events-none"></div>
+            
+            <div class="container mx-auto px-6 lg:px-12 relative z-10 text-center reveal">
+                <h2 class="font-playfair text-4xl font-bold text-gray-900 mb-12">Loved by Mothers</h2>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Review 1 -->
+                    <div class="glass-card p-8 rounded-3xl text-left relative mt-8">
+                        <div class="absolute -top-6 left-8">
+                            <img src="download 5).jpg" alt="Avatar" class="w-14 h-14 rounded-full border-4 border-white shadow-md">
+                        </div>
+                        <div class="flex text-yellow-400 text-sm mb-4 mt-4">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <h4 class="font-playfair font-bold text-lg mb-2">Sempurna!</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed mb-4">"Sangat memahami mengapa koleksi ini menjadi produk terlaris. Materialnya begitu lembut, sejuk, dan sangat nyaman dikenakan si kecil untuk beraktivitas seharian. BLESS benar-benar menghadirkan kualitas premium yang tulus."</p>
+                        <p class="text-xs font-bold text-gray-800 uppercase tracking-wide">Mama Bianca.</p>
+                    </div>
+                    
+                    <!-- Review 2 -->
+                    <div class="glass-card p-8 rounded-3xl text-left relative transform md:-translate-y-4 border-bless-light/30">
+                        <div class="absolute -top-6 left-8">
+                            <img src="download (5).jpg" alt="Avatar" class="w-14 h-14 rounded-full border-4 border-white shadow-md">
+                        </div>
+                        <div class="flex text-yellow-400 text-sm mb-4 mt-4">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <h4 class="font-playfair font-bold text-lg mb-2">Istimewa</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed mb-4">"Pertama kali mencoba, saya langsung jatuh cinta dengan potongan dan kelembutan kainnya. Sangat aman untuk kulit balita yang sensitif. Desainnya anggun dan kualitas jahitannya pun sangat rapi."</p>
+                        <p class="text-xs font-bold text-gray-800 uppercase tracking-wide">Mama Valerie.</p>
+                    </div>
+
+                    <!-- Review 3 -->
+                    <div class="glass-card p-8 rounded-3xl text-left relative mt-8">
+                        <div class="absolute -top-6 left-8">
+                            <img src="orang.jpg" alt="Avatar" class="w-14 h-14 rounded-full border-4 border-white shadow-md">
+                        </div>
+                        <div class="flex text-yellow-400 text-sm mb-4 mt-4">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                        </div>
+                        <h4 class="font-playfair font-bold text-lg mb-2">Eksklusif</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed mb-4">"Produk dari BLESS ini memang tidak mengecewakan. Perpaduan sempurna antara kenyamanan tingkat tinggi dan tampilan yang manis. Pilihan terbaik untuk buah hati."</p>
+                        <p class="text-xs font-bold text-gray-800 uppercase tracking-wide">Mama Nadine.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Instagram Gallery -->
+        <section class="py-2 bg-white">
+            <div class="container mx-auto px-2">
+                <div class="text-center mb-8 reveal">
+                    <p class="text-sm font-bold tracking-widest text-gray-500 uppercase">@blessfshn</p>
+                    <h3 class="font-playfair text-2xl font-bold mt-2">Follow Instagram Kami</h3>
+                </div>
+                <!-- Instagram Gallery Content -->
+<!-- PERBAIKAN: Gunakan flex, justify-center, dan max-w-5xl mx-auto biar sekelompok gambar ini ke tengah layar -->
+<div class="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto px-4 py-8">
+
+    <!-- Gambar 4 -->
+    <!-- PERBAIKAN: Beri ukuran pasti misal w-64 atau max-w-[250px] biar gedenya pas -->
+    <a href="https://www.instagram.com/blessfshn?igsh=MTBvZDdkcWRteWg5bA==" target="_blank" class="relative group overflow-hidden aspect-square rounded-xl block w-full max-w-[250px]">
+        
+        <img src="bless logo.jpeg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+        
+        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity grid place-items-center text-white text-3xl">
+            <i class="fa-brands fa-instagram"></i>
+        </div>
+        
+    </a>
+
+    <!-- Kalau nanti ada gambar lain, tinggal tambah <a> lagi di bawah sini, otomatis dia bakal nyusun ke tengah! -->
+
+</div>
+    </a>
+
+</div>
+    </a>
+</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="py-24 relative overflow-hidden">
+            <!-- Background Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-br from-bless-soft via-white to-bless-lavender z-0"></div>
+            
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="max-w-3xl mx-auto glass-card rounded-[40px] p-10 md:p-16 text-center shadow-2xl reveal">
+                    <img src="bless logo.jpeg" alt="Bless" class="h-16 mx-auto mb-6 drop-shadow-md" onerror="this.style.display='none'">
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gray-900 mb-4">Get 10% Off Your First Order</h2>
+                    <p class="text-gray-600 mb-8">Subscribe to our newsletter for exclusive offers, new arrivals, and styling tips.</p>
+                    
+                    <form class="flex flex-col sm:flex-row gap-4 justify-center" onsubmit="event.preventDefault(); showToast('Subscribed Successfully!', 'fa-check-circle'); this.reset();">
+                        <input type="email" placeholder="Your email address" required class="px-6 py-4 rounded-full border border-gray-200 focus:outline-none focus:border-bless focus:ring-2 focus:ring-bless/20 flex-1 max-w-md bg-white/80 backdrop-blur-sm">
+                        <button type="submit" class="btn-primary px-8 py-4 rounded-full font-medium whitespace-nowrap">
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 pt-16 pb-8">
+        <div class="container mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <!-- Brand Info -->
+                <div class="space-y-4">
+                    <img src="bless logo.jpeg" alt="Bless Logo" class="h-12 object-contain" onerror="this.outerHTML='<h2 class=\'font-playfair text-3xl font-bold text-bless\'>Bless</h2>'">
+                    <p class="text-sm text-gray-500 leading-relaxed pt-2">
+                         <em>Grow With Style</em>.
+                    </p>
+                    <div class="flex gap-4 pt-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-bless-soft flex items-center justify-center text-bless hover:bg-bless hover:text-white transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-bless-soft flex items-center justify-center text-bless hover:bg-bless hover:text-white transition-colors"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-bless-soft flex items-center justify-center text-bless hover:bg-bless hover:text-white transition-colors"><i class="fa-brands fa-pinterest"></i></a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-playfair font-bold text-lg mb-6">Shop</h4>
+                    <ul class="space-y-3 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-bless transition-colors">New Arrivals</a></li>
+                        <li><a href="#" class="hover:text-bless transition-colors">Best Sellers</a></li>
+                        <li><a href="#" class="hover:text-bless transition-colors">Dresses & Tutus</a></li>
+                        <li><a href="#" class="hover:text-bless transition-colors">Accessories</a></li>
+                        <li><a href="#" class="hover:text-bless transition-colors">Gift Cards</a></li>
+                    </ul>
+                </div>
+
+                <!-- Help -->
+                <div>
+                    <h4 class="font-playfair font-bold text-lg mb-6">Support</h4>
+                    <ul class="space-y-3 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-bless transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-bless transition-colors">Shipping & Returns</a></li>
+                        <li><a href="#" class="hover:text-bless transition-colors">Size Guide</a></li>
+                        <li><a href="#" class="hover:text-bless transition-colors">Track Order</a></li>
+                        <li><a href="#" class="hover:text-bless transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-playfair font-bold text-lg mb-6">Contact</h4>
+                    <ul class="space-y-4 text-sm text-gray-500">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-location-dot mt-1 text-bless"></i>
+                            <span>Jl. Mutiara<br>Palangka Raya, Indonesia</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-envelope text-bless"></i>
+                            <a href="mailto:hello@blesskids.com" class="hover:text-bless">mayblessbewithyou@gmail.com</a>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-brands fa-whatsapp text-bless"></i>
+                            <a href="#" class="hover:text-bless">+62 811 2233 4455</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-gray-400">&copy; 2026 Bless Kids Fashion. All rights reserved.</p>
+                <div class="flex gap-4 opacity-50">
+                    <i class="fa-brands fa-cc-visa text-2xl"></i>
+                    <i class="fa-brands fa-cc-mastercard text-2xl"></i>
+                    <!-- Simulated local payment icons -->
+                    <span class="font-bold border rounded px-1 text-xs flex items-center">QRIS</span>
+                    <span class="font-bold border rounded px-1 text-xs flex items-center">E-WALLET</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="#" class="fixed bottom-6 right-6 w-14 h-14 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl shadow-lg hover:scale-110 transition-transform z-40 animate-bounce">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Checkout Modal (Full Screen) -->
+    <div id="checkout-modal" class="fixed inset-0 bg-white z-[70] hidden flex-col overflow-y-auto">
+        <div class="container mx-auto max-w-5xl p-6 lg:p-12 relative flex-1 flex flex-col">
+            <!-- Header -->
+            <div class="flex justify-between items-center border-b pb-6 mb-8">
+                <img src="bless logo.jpeg" alt="Bless" class="h-10" onerror="this.outerHTML='<span class=\'font-playfair text-2xl font-bold text-bless\'>Bless</span>'">
+                <h2 class="font-playfair text-2xl font-bold">Secure Checkout</h2>
+                <button id="close-checkout" class="text-gray-400 hover:text-bless text-2xl"><i class="fa-solid fa-times"></i></button>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 flex-1">
+                <!-- Left: Form -->
+                <div>
+                    <h3 class="font-playfair text-xl font-bold mb-6">1. Shipping Information</h3>
+                    <form id="checkout-form" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" placeholder="First Name" required class="w-full p-3 rounded-xl border focus:border-bless focus:ring-1 focus:ring-bless outline-none bg-gray-50">
+                            <input type="text" placeholder="Last Name" required class="w-full p-3 rounded-xl border focus:border-bless focus:ring-1 focus:ring-bless outline-none bg-gray-50">
+                        </div>
+                        <input type="email" placeholder="Email Address" required class="w-full p-3 rounded-xl border focus:border-bless focus:ring-1 focus:ring-bless outline-none bg-gray-50">
+                        <input type="text" placeholder="Phone Number" required class="w-full p-3 rounded-xl border focus:border-bless focus:ring-1 focus:ring-bless outline-none bg-gray-50">
+                        <textarea placeholder="Complete Address" rows="3" required class="w-full p-3 rounded-xl border focus:border-bless focus:ring-1 focus:ring-bless outline-none bg-gray-50"></textarea>
+                        
+                        <h3 class="font-playfair text-xl font-bold mt-10 mb-6 pt-6 border-t">2. Payment Method</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center justify-between p-4 border rounded-xl cursor-pointer hover:border-bless transition-colors has-[:checked]:border-bless has-[:checked]:bg-bless-soft/30">
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" name="payment" value="qris" checked class="accent-bless w-4 h-4">
+                                    <span class="font-medium">QRIS</span>
+                                </div>
+                                <i class="fa-solid fa-qrcode text-gray-400"></i>
+                            </label>
+                            <label class="flex items-center justify-between p-4 border rounded-xl cursor-pointer hover:border-bless transition-colors has-[:checked]:border-bless has-[:checked]:bg-bless-soft/30">
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" name="payment" value="transfer" class="accent-bless w-4 h-4">
+                                    <span class="font-medium">Bank Transfer (Virtual Account)</span>
+                                </div>
+                                <i class="fa-solid fa-building-columns text-gray-400"></i>
+                            </label>
+                            <label class="flex items-center justify-between p-4 border rounded-xl cursor-pointer hover:border-bless transition-colors has-[:checked]:border-bless has-[:checked]:bg-bless-soft/30">
+                                <div class="flex items-center gap-3">
+                                    <input type="radio" name="payment" value="ewallet" class="accent-bless w-4 h-4">
+                                    <span class="font-medium">E-Wallet (GoPay, OVO, ShopeePay)</span>
+                                </div>
+                                <i class="fa-solid fa-wallet text-gray-400"></i>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right: Order Summary -->
+                <div class="bg-gray-50 rounded-3xl p-8 h-fit border border-gray-100">
+                    <h3 class="font-playfair text-xl font-bold mb-6">Order Summary</h3>
+                    <div id="checkout-items" class="space-y-4 mb-6 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Injected via JS -->
+                    </div>
+                    
+                    <div class="border-t pt-4 space-y-2 text-sm">
+                        <div class="flex justify-between text-gray-500"><span>Subtotal</span><span id="checkout-subtotal">Rp 0</span></div>
+                        <div class="flex justify-between text-gray-500"><span>Shipping</span><span>Rp 25.000</span></div>
+                        <div class="flex justify-between font-bold text-lg pt-4 border-t mt-4 text-gray-800">
+                            <span>Total</span><span id="checkout-final-total" class="text-bless font-playfair text-xl">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <button onclick="processOrder()" class="w-full btn-primary py-4 rounded-xl font-bold text-lg mt-8 uppercase shadow-lg shadow-bless/30 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-lock text-sm"></i> Pay Now
+                    </button>
+                    <p class="text-center text-xs text-gray-400 mt-4"><i class="fa-solid fa-shield-halved"></i> Secure encrypted checkout</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Application Logic -->
+    <script>
+        // --- DATA ---
+        const products = [
+            { id: 1, name: "Amélie Pleated Tweed Dress", price: 649000, img: "c6f75a76-aa37-42e4-a057-27b0913796d5.jpg", tag: "Best Seller" },
+            { id: 2, name: "Charlotte Asymmetric Coat Dress", price: 749000, img: "foto 5.jpg", tag: "Best Seller" },
+            { id: 3, name: "Chloé Tulip Tweed Shorts Set", price: 599000, img: "foto 10.jpg", tag: "Best Seller" },
+            { id: 4, name: "Genevieve Houndstooth Organza Dress", price: 699000, img: "foto 6.jpg", tag: "Best Seller" },
+            { id: 5, name: "Beatrice Tailored Checkered Dress", price: 650000, img: "foto 2.jpg", tag: "" },
+            { id: 6, name: "Madeline Scallop Plaid Dress", price: 645000, img: "foto 3.jpg", tag: "" },
+            { id: 7, name: "Vivienne Vintage Leather-Bow Dress", price: 410000, img: "foto 4.jpg", tag: "" },
+            { id: 8, name: "Odette Chambray Ruffle Dress", price: 600000, img: "foto 7.jpg", tag: "" },
+            { id: 9, name: "Colette Preppy Knit Shorts Set", price: 410000, img: "foto 8.jpg", tag: "" },
+            { id: 10, name: "Fleur Pastel Pleated Skirt Set", price: 465000, img: "foto 9.jpg", tag: "" },
+            { id: 11, name: "Célestine Pearl Heart Skirt Set", price: 430000, img: "foto 11.jpg", tag: "" }
+        ];
+
+        let cart = [];
+
+        // --- FORMATTING ---
+        const formatIDR = (number) => {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+        };
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Remove Loader
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }, 1000);
+
+            renderProducts();
+            renderCarousel();
+            setupScrollEffects();
+            setupUIEvents();
+        });
+
+        // --- RENDER FUNCTIONS ---
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = products.slice(0, 4).map(product => createProductCardHTML(product)).join('');
+        }
+
+        function renderCarousel() {
+            const carousel = document.getElementById('bestseller-carousel');
+            // Duplicate some for carousel effect
+            const carouselProducts = [...products.slice(1, 11), products[0]]; 
+            carousel.innerHTML = carouselProducts.map(product => `
+                <div class="min-w-[280px] md:min-w-[320px] snap-center">
+                    ${createProductCardHTML(product)}
+                </div>
+            `).join('');
+        }
+
+        function createProductCardHTML(product) {
+            const badgeHTML = product.tag ? `<div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full text-bless shadow-sm z-10">${product.tag}</div>` : '';
+            
+            return `
+                <div class="product-card group relative bg-white rounded-3xl p-3 shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100">
+                    <div class="relative rounded-2xl overflow-hidden aspect-[4/5] img-container bg-gray-50">
+                        ${badgeHTML}
+                        <button class="absolute top-4 right-4 z-10 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white transition-colors shadow-sm">
+                            <i class="fa-solid fa-heart text-sm"></i>
+                        </button>
+                        <img src="${product.img}" alt="${product.name}" class="w-full h-full object-cover">
+                        
+                        <!-- Hover Add to Cart Button -->
+                        <div class="cart-btn-overlay absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent">
+                            <button onclick="addToCart(${product.id})" class="w-full bg-white text-gray-900 font-medium py-3 rounded-xl hover:bg-bless hover:text-white transition-colors shadow-lg flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-playfair font-bold text-lg text-gray-800 mb-1 cursor-pointer hover:text-bless transition-colors">${product.name}</h3>
+                        <p class="text-bless font-medium">${formatIDR(product.price)}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CART LOGIC ---
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+
+            updateCartUI();
+            showToast(`Added ${product.name} to cart!`, 'fa-cart-shopping');
+            
+            // Auto open cart on desktop, just badge on mobile
+            if(window.innerWidth > 768) {
+                toggleCart(true);
+            }
+        }
+
+        function updateCartUI() {
+            const countEl = document.getElementById('cart-count');
+            const itemsContainer = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const btnCheckout = document.getElementById('btn-checkout');
+            const emptyMsg = document.querySelector('.empty-cart-msg');
+
+            // Calculate totals
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            // Update Header Badge
+            countEl.textContent = totalQty;
+            countEl.style.transform = 'scale(1.2)';
+            setTimeout(() => countEl.style.transform = 'scale(1)', 200);
+
+            // Update Sidebar Items
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = '';
+                itemsContainer.appendChild(emptyMsg);
+                emptyMsg.style.display = 'block';
+                btnCheckout.disabled = true;
+            } else {
+                emptyMsg.style.display = 'none';
+                btnCheckout.disabled = false;
+                
+                itemsContainer.innerHTML = cart.map(item => `
+                    <div class="flex gap-4 items-center bg-white p-3 rounded-2xl border shadow-sm">
+                        <img src="${item.img}" class="w-20 h-24 object-cover rounded-xl bg-gray-50">
+                        <div class="flex-1">
+                            <h4 class="font-playfair font-bold text-sm text-gray-800 mb-1">${item.name}</h4>
+                            <p class="text-bless font-medium text-sm mb-2">${formatIDR(item.price)}</p>
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center border rounded-lg overflow-hidden bg-gray-50">
+                                    <button onclick="changeQty(${item.id}, -1)" class="px-2 py-1 text-gray-500 hover:text-bless hover:bg-gray-100 transition"><i class="fa-solid fa-minus text-xs"></i></button>
+                                    <span class="px-2 text-sm font-medium w-6 text-center">${item.qty}</span>
+                                    <button onclick="changeQty(${item.id}, 1)" class="px-2 py-1 text-gray-500 hover:text-bless hover:bg-gray-100 transition"><i class="fa-solid fa-plus text-xs"></i></button>
+                                </div>
+                                <button onclick="removeFromCart(${item.id})" class="text-gray-400 hover:text-red-500 ml-auto p-1"><i class="fa-regular fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Update Totals text
+            totalEl.textContent = formatIDR(totalPrice);
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    removeFromCart(id);
+                } else {
+                    updateCartUI();
+                }
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
+        // --- UI INTERACTIONS & EVENTS ---
+        function setupUIEvents() {
+            // Cart Sidebar Toggles
+            const cartIcon = document.getElementById('cart-icon');
+            const closeCart = document.getElementById('close-cart');
+            const cartOverlay = document.getElementById('cart-overlay');
+            const shopNowEmpty = document.getElementById('shop-now-empty');
+
+            cartIcon.addEventListener('click', () => toggleCart(true));
+            closeCart.addEventListener('click', () => toggleCart(false));
+            cartOverlay.addEventListener('click', () => { toggleCart(false); toggleMobileMenu(false); });
+            shopNowEmpty.addEventListener('click', () => { toggleCart(false); document.getElementById('collection').scrollIntoView(); });
+
+            // Mobile Menu Toggles
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const closeMobileBtn = document.getElementById('close-mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+
+            mobileBtn.addEventListener('click', () => toggleMobileMenu(true));
+            closeMobileBtn.addEventListener('click', () => toggleMobileMenu(false));
+            mobileLinks.forEach(link => link.addEventListener('click', () => toggleMobileMenu(false)));
+
+            // Carousel Drag to scroll logic
+            const carousel = document.getElementById('bestseller-carousel');
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            carousel.addEventListener('mousedown', (e) => {
+                isDown = true;
+                startX = e.pageX - carousel.offsetLeft;
+                scrollLeft = carousel.scrollLeft;
+            });
+            carousel.addEventListener('mouseleave', () => isDown = false);
+            carousel.addEventListener('mouseup', () => isDown = false);
+            carousel.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - carousel.offsetLeft;
+                const walk = (x - startX) * 2;
+                carousel.scrollLeft = scrollLeft - walk;
+            });
+
+            // Carousel Buttons
+            document.getElementById('scroll-left').addEventListener('click', () => {
+                carousel.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+            document.getElementById('scroll-right').addEventListener('click', () => {
+                carousel.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+
+            // Checkout Flow
+            const btnCheckout = document.getElementById('btn-checkout');
+            const modalCheckout = document.getElementById('checkout-modal');
+            const closeCheckout = document.getElementById('close-checkout');
+
+            btnCheckout.addEventListener('click', () => {
+                if(cart.length > 0) {
+                    toggleCart(false);
+                    populateCheckoutData();
+                    modalCheckout.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; // prevent bg scroll
+                }
+            });
+
+            closeCheckout.addEventListener('click', () => {
+                modalCheckout.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+        }
+
+        function toggleCart(show) {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            if (show) {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function toggleMobileMenu(show) {
+            const menu = document.getElementById('mobile-menu');
+            if (show) {
+                menu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('translate-x-full');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- CHECKOUT LOGIC ---
+        function populateCheckoutData() {
+            const itemsContainer = document.getElementById('checkout-items');
+            const subtotalEl = document.getElementById('checkout-subtotal');
+            const totalEl = document.getElementById('checkout-final-total');
+            
+            let subtotal = 0;
+            
+            itemsContainer.innerHTML = cart.map(item => {
+                subtotal += (item.price * item.qty);
+                return `
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <img src="${item.img}" class="w-16 h-16 object-cover rounded-lg border">
+                            <span class="absolute -top-2 -right-2 bg-gray-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">${item.qty}</span>
+                        </div>
+                        <div class="flex-1 text-sm">
+                            <p class="font-bold text-gray-800">${item.name}</p>
+                        </div>
+                        <div class="text-sm font-medium text-gray-600">
+                            ${formatIDR(item.price * item.qty)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const shippingCost = 25000;
+            const finalTotal = subtotal + shippingCost;
+
+            subtotalEl.textContent = formatIDR(subtotal);
+            totalEl.textContent = formatIDR(finalTotal);
+        }
+
+        function processOrder() {
+            const form = document.getElementById('checkout-form');
+            if(!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Simulate processing
+            const btn = document.querySelector('button[onclick="processOrder()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                document.getElementById('checkout-modal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+                
+                // Clear cart
+                cart = [];
+                updateCartUI();
+                
+                // Show success
+                showToast('Payment Successful! Thank you for your order.', 'fa-check-circle', 'var(--primary)');
+                form.reset();
+                window.scrollTo(0,0);
+                
+            }, 2000);
+        }
+
+        // --- SCROLL EFFECTS & OBSERVERS ---
+        function setupScrollEffects() {
+            const navbar = document.getElementById('navbar');
+            const progressBar = document.getElementById('scroll-progress');
+            
+            window.addEventListener('scroll', () => {
+                // Navbar style on scroll
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-white/80', 'backdrop-blur-md', 'shadow-sm', 'py-2');
+                    navbar.classList.remove('py-4');
+                } else {
+                    navbar.classList.remove('bg-white/80', 'backdrop-blur-md', 'shadow-sm', 'py-2');
+                    navbar.classList.add('py-4');
+                }
+
+                // Scroll progress bar
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                progressBar.style.width = scrolled + "%";
+            });
+
+            // Intersection Observer for Reveal Animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // Run once
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // --- UTILS ---
+        function showToast(message, iconClass = 'fa-info-circle', color = 'var(--primary)') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast border-l-4 rounded-xl flex items-center bg-white shadow-xl p-4 gap-3 z-[9999]';
+            toast.style.borderColor = color;
+            
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-2xl" style="color: ${color}"></i>
+                <div>
+                    <h4 class="font-bold text-sm text-gray-800">Bless</h4>
+                    <p class="text-xs text-gray-600">${message}</p>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300); // Wait for transition
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>
